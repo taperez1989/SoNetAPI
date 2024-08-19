@@ -75,4 +75,49 @@ module.exports = {
             res.status(500).json(err);
         }
     },
+
+    // Add a reaction to a thought
+    async addReaction(req, res) {
+        console.log('You are adding a reaction');
+        console.log(req.body);
+
+        try {
+            const singleReaction = await reaction.findOneAndUpdate(
+                { _id: req.params.reactionId },
+                { $addToSet: { friends: req.body } },
+                { runValidators: true, new: true }
+            );
+
+            if (!singleReaction) {
+                return res
+                    .status(404)
+                    .json({ message: 'No student found with that ID :(' });
+            }
+
+            res.json(singleReaction);
+        } catch (err) {
+            res.status(500).json(err);
+        }
+    },
+    // Remove friend from a User
+    async removeReaction(req, res) {
+        try {
+            const deleteReaction = await reaction.findOneAndUpdate(
+                { _id: req.params.reactionId },
+                { $pull: { friends: deleteReaction._id } },
+                { runValidators: true, new: true }
+            );
+
+            if (!deleteReaction) {
+                return res
+                    .status(404)
+                    .json({ message: 'No student found with that ID :(' });
+            }
+
+            res.json(deleteReaction);
+        } catch (err) {
+            res.status(500).json(err);
+        }
+    },
 };
+
