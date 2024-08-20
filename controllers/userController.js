@@ -56,22 +56,10 @@ module.exports = {
     // Delete a User and remove them from the course
     async deleteUser(req, res) {
         try {
-            const User = await User.findOneAndRemove({ _id: req.params.userId });
+            const currentUser = await User.findOneAndDelete({ _id: req.params.userId });
 
             if (!User) {
                 return res.status(404).json({ message: 'No such User exists' });
-            }
-
-            const singleUser = await User.findOneAndUpdate(
-                { users: req.params.userId },
-                { $: { users: req.params.userId } },
-                { new: true }
-            );
-
-            if (!singleUser) {
-                return res.status(404).json({
-                    message: 'User deleted',
-                });
             }
 
             res.json({ message: 'User successfully deleted' });
@@ -80,26 +68,43 @@ module.exports = {
             res.status(500).json(err);
         }
     },
-
-    // Add a friend to a User
-    async addFriend(req, res) {
-        console.log('You are adding an afriend');
-        console.log(req.body);
-
+    async updateUser(req, res) {
         try {
-            const friend = await friends.findOneAndUpdate(
-                { _id: req.params.friendId },
-                { $addToSet: { friends: req.body } },
+            const updatedUser = await User.findOneAndUpdate(
+                { _id: req.params.userId },
+                { $set: req.body },
                 { runValidators: true, new: true }
             );
 
-            if (!friend) {
-                return res
-                    .status(404)
-                    .json({ message: 'No student found with that ID :(' });
+            if (!updatedUser) {
+                res.status(404).json({ message: 'No Thought with this id!' });
             }
+            console.log(updatedUser);
+            res.json(updatedUser);
+        } catch (err) {
+            res.status(500).json(err);
+        }
+    },
 
-            res.json(friend);
+    // Add a friend to a User
+    async addFriend(req, res) {
+        console.log('You are adding an a friend');
+        
+        try {
+            const newFriend = await User.findOneAndUpdate(
+                { _id: req.params.userId },
+                { $addToSet: { friends: req.body.friendId } },
+                { runValidators: true, new: true }
+            );
+            
+            if (!newFriend) {
+                return res
+                .status(404)
+                .json({ message: 'No student found with that ID :(' });
+            }
+            
+            console.log(newFriend);
+            res.json(newFriend);
         } catch (err) {
             res.status(500).json(err);
         }

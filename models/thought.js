@@ -16,10 +16,10 @@ const thoughtSchema = new Schema({
         default: Date.now,
 
     },
-    userName: {
-        type: String,
-        required: true,
-    },
+    // userName: {
+    //     type: String,
+    //     required: true,
+    // },
     reaction: [reactionSchema],
 },
     {

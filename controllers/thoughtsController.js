@@ -28,7 +28,7 @@ module.exports = {
     // Create a Thought
     async createThought(req, res) {
         try {
-            const userThought = await Thought.create(req.body);
+        const userThought = await Thought.create({thoughtText: req.body.thoughtText});
             const singleUser = await User.findOneAndUpdate(
                 { _id: req.body.userId },
                 { $push: { thoughts: userThought._id } },
@@ -82,9 +82,9 @@ module.exports = {
         console.log(req.body);
 
         try {
-            const singleReaction = await reaction.findOneAndUpdate(
-                { _id: req.params.reactionId },
-                { $addToSet: { friends: req.body } },
+            const singleReaction = await Thought.findOneAndUpdate(
+                { _id: req.params.thoughtId },
+                { $addToSet: { thoughts: req.body.reactionId } },
                 { runValidators: true, new: true }
             );
 
@@ -104,7 +104,7 @@ module.exports = {
         try {
             const deleteReaction = await reaction.findOneAndUpdate(
                 { _id: req.params.reactionId },
-                { $pull: { friends: deleteReaction._id } },
+                { $pull: { reaction: deleteReaction._id } },
                 { runValidators: true, new: true }
             );
 
